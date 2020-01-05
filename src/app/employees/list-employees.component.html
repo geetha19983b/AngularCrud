@@ -18,10 +18,25 @@
 <br /><br />
 <app-display-employee [employee]="employeeToDisplay">
 </app-display-employee> -->
+<div class="form-group">
+    <input type="text" class="form-control" placeholder="Search By Name"
+    style="width:300px" [(ngModel)]="searchTerm">
+    <button class="btn btn-success p-2" (click)="changeEmployeeName()">Change Employee</button>
 
-<div *ngFor="let employee of employees">
-    <div (click)="onClick(employee.id)" class="pointerCursor">
+    
+</div>
+<div *ngFor="let employee of filteredEmployees">
+<!-- | employeeFilter:searchTerm"> -->
+    <!-- <div (click)="onClick(employee.id)" class="pointerCursor">
         <app-display-employee [employee]="employee" >
         </app-display-employee>
-    </div>
+    </div> -->
+    
+        <app-display-employee [employee]="employee" [searchTerm]="searchTerm"
+        (notifyDelete)="onDeleteNotification($event)">
+        </app-display-employee>
+   
+</div>
+<div *ngIf="error">
+    {{ error }}
 </div>

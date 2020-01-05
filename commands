@@ -1,0 +1,5 @@
+Execute the following command to install JSON server
+npm install -g json-server
+
+Execute the following command to start the server
+json-server --watch db.json

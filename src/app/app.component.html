@@ -5,7 +5,7 @@
         <a routerLink="list">List</a>
       </li>
       <li>
-        <a routerLink="create">Create</a>
+        <a routerLink="edit/0">Create</a>
       </li>
       <li>
      
@@ -16,4 +16,6 @@
     </ul>
   </nav>
   <router-outlet></router-outlet>
+  <!-- Bind to showLoadingIndicator property in the component class -->
+  <div *ngIf="showLoadingIndicator" class="spinner"></div>
 </div>
