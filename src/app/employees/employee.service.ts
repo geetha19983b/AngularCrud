@@ -4,11 +4,12 @@ import { Observable, of, throwError } from 'rxjs';
 //import 'rxjs/add/observable/of';
 //import 'rxjs/add/operator/delay';
 import { delay } from 'rxjs/operators';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class EmployeeService {
+  baseUrl = 'http://localhost:3000/employees';
   constructor(private httpClient: HttpClient) {
   }
 
@@ -57,7 +58,7 @@ export class EmployeeService {
 
   getEmployees(): Observable<Employee[]> {
     //return of(this.listEmployees).pipe(delay(2000));
-    return this.httpClient.get<Employee[]>('http://localhost:3000/employees')
+    return this.httpClient.get<Employee[]>(this.baseUrl)
           .pipe(catchError(this.handleError));
   }
   private handleError(errorResponse: HttpErrorResponse) {
@@ -68,30 +69,49 @@ export class EmployeeService {
     }
     return throwError('There is a problem with the service. We are notified & working on it. Please try again later.');
   }
-  save(employee: Employee) {
-    if (employee.id === null) {
+  addEmployee(employee: Employee) :Observable<Employee> {
+    //if (employee.id === null) {
       // reduce() method reduces the array to a single value. This method executes
       // the provided function for each element of the array (from left-to-right)
       // When we implement the server side service to save data to the database
       // table, we do not have to compute the id, as the server will assing it
-      const maxId = this.listEmployees.reduce(function (e1, e2) {
+      /* const maxId = this.listEmployees.reduce(function (e1, e2) {
         return (e1.id > e2.id) ? e1 : e2;
       }).id;
       employee.id = maxId + 1;
 
-      this.listEmployees.push(employee);
-    } else {
-      const foundIndex = this.listEmployees.findIndex(e => e.id === employee.id);
-      this.listEmployees[foundIndex] = employee;
-    }
+      this.listEmployees.push(employee); */
+      return this.httpClient.post<Employee>('http://localhost:3000/employees',employee,
+      {
+        headers:new HttpHeaders({'Content-Type':'application/json'})
+      }).pipe(catchError(this.handleError));
+
+    // } else {
+    //   const foundIndex = this.listEmployees.findIndex(e => e.id === employee.id);
+    //   this.listEmployees[foundIndex] = employee;
+    // }
   }
-  getEmployee(id: number): Employee {
-    return this.listEmployees.find(e => e.id === id);
+  updateEmployee(employee:Employee):Observable<void>{
+    return this.httpClient.put<void>(`${this.baseUrl}/${employee.id}`,employee,{
+      headers:new HttpHeaders({
+        'Content-Type':'application/json'
+      })
+    })
+    .pipe(catchError(this.handleError));
   }
-  deleteEmployee(id: number) {
-    const i = this.listEmployees.findIndex(e => e.id === id);
+  getEmployee(id: number): Observable<Employee> {
+    //return this.listEmployees.find(e => e.id === id);
+    return this.httpClient.get<Employee>(`${this.baseUrl}/${id}`)
+    .pipe(catchError(this.handleError));
+  }
+  deleteEmployee(id: number) :Observable<void> {
+    /* const i = this.listEmployees.findIndex(e => e.id === id);
     if (i !== -1) {
       this.listEmployees.splice(i, 1);
-    }
+    } */
+    return this.httpClient.delete<void>(`${this.baseUrl}/${id}`)
+    .pipe(catchError(this.handleError));
+
+
   }
 }
